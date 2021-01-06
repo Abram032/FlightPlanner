@@ -8,6 +8,10 @@ target 'FlightPlanner' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
+
+  pod 'RNGoogleSignin', :path => '../node_modules/react-native-google-signin'
+
   target 'FlightPlannerTests' do
     inherit! :complete
     # Pods for testing

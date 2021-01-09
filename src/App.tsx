@@ -20,7 +20,7 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { isAuthenticated } from './services/AuthService';
 import { SignIn } from './components/auth/SignIn';
-import { Loader } from './components/Loader';
+import { Loader } from './components/shared/Loader';
 import { Navigation } from './components/navigation/Navigation';
 
 interface State {

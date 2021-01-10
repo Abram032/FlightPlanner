@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import { styles } from '../styles/Styles';
 
 export interface Props {
   backgroundColor?: string,
@@ -15,14 +16,5 @@ export class Home extends React.Component<Props> {
     );
   }
 };
-
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    backgroundColor: '#03adfc',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
 
 export default Home;

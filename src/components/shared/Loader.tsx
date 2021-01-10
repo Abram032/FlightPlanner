@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
+import { styles } from '../../styles/Styles';
 
 export interface Props {
     backgroundColor?: string,
@@ -13,13 +14,5 @@ export function Loader(props: Props)  {
     </View>
   );
 };
-  
-const styles = StyleSheet.create({
-  loader: {
-    flex: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default Loader;

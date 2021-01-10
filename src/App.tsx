@@ -1,27 +1,12 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
+import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { isAuthenticated } from './services/AuthService';
 import { SignIn } from './components/auth/SignIn';
 import { Loader } from './components/shared/Loader';
 import { Navigation } from './components/navigation/Navigation';
+import { styles } from './styles/Styles';
 
 interface State {
   isLoading: boolean,
@@ -87,14 +72,5 @@ export class App extends React.Component<any, State> {
     return this.state.isAuthenticated ? this.renderAuthenticated() : this.renderNotAuthenticated();
   }
 };
-
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    backgroundColor: '#03adfc',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
 
 export default App;

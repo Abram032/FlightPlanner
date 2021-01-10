@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View } from 'react-native';
+import { styles } from '../../styles/Styles';
 
 export interface Props {
   headerComponent: React.ReactNode,
@@ -15,42 +16,16 @@ export class Card extends React.Component<Props> {
 
   render() {
     return (
-      <View style={styles.body}>
-        <View style={this.props.headerStyles ?? styles.header}>
+      <View style={styles.cardBody}>
+        <View style={{...styles.cardHeader, ...this.props.headerStyles }}>
           {this.props.headerComponent}
         </View>
-        <View style={this.props.contentStyles ?? styles.content}>
+        <View style={{...styles.cardContent, ...this.props.contentStyles }}>
           {this.props.contentComponent}
         </View>
       </View>
     );
   }
 };
-
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    width: '100%',
-    paddingTop: 20,
-    paddingBottom: 20,
-    alignItems: 'center',
-  },
-  header: {
-    width: '100%',
-    minHeight: 40,
-    padding: 10,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    backgroundColor: '#ddd',
-    justifyContent: 'center',
-  },
-  content: {
-    width: '100%',
-    padding: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    backgroundColor: '#fff',
-  }
-});
 
 export default Card;

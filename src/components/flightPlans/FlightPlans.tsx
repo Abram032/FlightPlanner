@@ -2,26 +2,39 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
 import { FlightPlan } from '../../models/FlightPlan';
 import { Card } from '../shared/Card';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import { styles } from '../../styles/Styles';
 
 let data: FlightPlan[] = [
-  new FlightPlan('784287-23424-32423-42342', 'EPWA -> EDDB'),
-  new FlightPlan('784287-23424-32423-42343', 'EDDB -> EPWA'),
+  new FlightPlan('EPWA -> EDDB', new Date()),
+  new FlightPlan('EDDB -> EPWA', new Date()),
 ];
 
-export class FlightPlans extends React.Component {
+interface State {
+  isLoading: boolean
+}
+
+const Stack = createStackNavigator();
+
+export class FlightPlans extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
+
+    this.state = {
+      isLoading: true
+    }
 
     this.renderHeader = this.renderHeader.bind(this);
     this.renderContent = this.renderContent.bind(this);
     this.renderItem = this.renderItem.bind(this);
-    this.onShowFlightPlanDetails = this.onShowFlightPlanDetails.bind(this);
-    this.onCreateFlightPlan = this.onCreateFlightPlan.bind(this);
+    this.onShowDetails = this.onShowDetails.bind(this);
+    this.onCreate = this.onCreate.bind(this);
   }
 
   renderItem({ item }: { item: FlightPlan }) {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.itemContainer} onPress={this.onShowFlightPlanDetails}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.touchableOpacity} onPress={() => { this.onShowDetails(item) }}>
         <Text>{item.name}</Text>
       </TouchableOpacity>
     )
@@ -30,14 +43,14 @@ export class FlightPlans extends React.Component {
   renderHeader() {
     return (
       <View>
-        <Text style={styles.cardHeader}>Saved flight plans:</Text>
+        <Text style={styles.cardHeaderText}>Saved flight plans:</Text>
       </View>
     );
   };
 
   renderContent() {
     return (
-      <View style={styles.itemsContainer}>
+      <View style={styles.flatListContainer}>
         <FlatList 
           data={data}
           renderItem={this.renderItem}
@@ -47,58 +60,26 @@ export class FlightPlans extends React.Component {
     );
   };
 
-  onCreateFlightPlan() {
-
+  onCreate() {
+    const { navigation } = this.props;
+    navigation.navigate("FlightPlanCustomForm");
   };
 
-  onShowFlightPlanDetails() {
-
+  onShowDetails(flightPlan: FlightPlan) {
+    const { navigation } = this.props;
+    navigation.navigate("FlightPlanDetails", flightPlan.id);
   };
 
   render() {
     return (
       <View style={styles.body}>
-        <TouchableOpacity activeOpacity={0.8} style={styles.button} onPress={this.onCreateFlightPlan}>
-          <Text style={styles.buttonText}>+ Create new flight plan</Text>
+        <TouchableOpacity activeOpacity={0.8} style={styles.componentButton} onPress={this.onCreate}>
+          <Text style={styles.componentButtonText}>+ Create new flight plan</Text>
         </TouchableOpacity>
         <Card headerComponent={this.renderHeader()} contentComponent={this.renderContent()} />
       </View>
     );
   }
 };
-
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    backgroundColor: '#03adfc',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20
-  },
-  button: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#222',
-    fontFamily: 'Roboto-Medium',
-  },
-  cardHeader: {
-    color: '#222',
-    fontFamily: 'Roboto-Medium',
-  },
-  itemsContainer: {
-    padding: 10,
-  },
-  itemContainer: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#ddd',
-    borderRadius: 5
-  }
-});
 
 export default FlightPlans;

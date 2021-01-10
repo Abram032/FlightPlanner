@@ -1,15 +1,20 @@
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+
 export class FlightPlan {
   id: string;
   name: string;
   date: Date;
+  createdAt?: Date;
   nodes: Node[];
   description?: string;
 
-  constructor(id: string, name: string, description?: string) {
-    this.id = id,
+  constructor(name: string, date: Date, description?: string) {
+    this.id = uuidv4(),
     this.name = name,
     this.description = description,
-    this.date = new Date(),
+    this.createdAt = new Date(),
+    this.date = date,
     this.nodes = []
   }
 
@@ -24,6 +29,20 @@ export class FlightPlan {
   removeNode(nodeId: number): void {
     this.nodes.splice(nodeId, 1);
   }
+}
+
+export interface Node {
+  id: string;
+  type: string;
+  ident: string;
+  coordinates: Coordinates;
+  altitude: number;
+  name?: string | null;
+  tot?: Date | null;
+  dtot?: DTOT | null;
+  via?: Via | null;
+  description?: string | null;
+  inDetailMode?: boolean;
 }
 
 export interface Coordinates {
@@ -42,14 +61,3 @@ export interface Via {
   ident: string | null
 }
 
-export interface Node {
-  type: string;
-  ident: string;
-  coordinates: Coordinates;
-  altitude: number;
-  name?: string | null;
-  tot?: Date | null;
-  dtot?: DTOT | null;
-  via?: Via | null;
-  description?: string | null;
-}

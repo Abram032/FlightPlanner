@@ -2,6 +2,7 @@ import React from 'react';
 import GoogleButton from '../buttons/GoogleButton';
 import { View, StyleSheet, Text } from 'react-native'
 import { signIn, isAuthenticated } from '../../services/AuthService';
+import { styles } from '../../styles/Styles';
 
 export interface Props {
   setLoading: (value: boolean) => void;
@@ -16,10 +17,10 @@ export class SignIn extends React.Component<Props> {
   render() {
     return(
       <View style={styles.body}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Flight Planner</Text>
+        <View style={styles.mainTitleContainer}>
+          <Text style={styles.mainTitleText}>Flight Planner</Text>
         </View>
-        <View style={styles.buttonContainer}>
+        <View style={styles.singInButtonContainer}>
           <GoogleButton 
             title="Sign in with Google"
             onClick={async () => {
@@ -35,29 +36,5 @@ export class SignIn extends React.Component<Props> {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    backgroundColor: '#03adfc',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  buttonContainer: {
-    flex: 3,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  title: {
-    color: '#fff',
-    fontFamily: 'Roboto-Medium',
-    fontSize: 32
-  },
-  titleContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
 
 export default SignIn;

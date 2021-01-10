@@ -72,7 +72,7 @@ export class FlightPlans extends React.Component<any, State> {
 
   render() {
     return (
-      <View style={styles.body}>
+      <View style={styles.componentBody}>
         <TouchableOpacity activeOpacity={0.8} style={styles.componentButton} onPress={this.onCreate}>
           <Text style={styles.componentButtonText}>+ Create new flight plan</Text>
         </TouchableOpacity>

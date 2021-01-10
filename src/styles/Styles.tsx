@@ -118,4 +118,37 @@ export const googleStyles = StyleSheet.create({
   }
 });
 
+export const formStyles = StyleSheet.create({
+  inputText: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 10,
+    padding: 5
+  },
+  formContainer: {
+    flex: 1,
+    width: '100%'
+  },
+  formButton: {
+    backgroundColor: '#fff',
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  formButtonText: {
+    color: '#222',
+    fontFamily: 'Roboto-Medium',
+  },
+  formDateText: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    height: 40,
+    marginBottom: 10,
+    textAlignVertical: 'center',
+    padding: 5
+  }
+});
+
 export default styles;

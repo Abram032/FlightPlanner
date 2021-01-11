@@ -24,7 +24,7 @@ export const CustomFlightPlanForm = (props: Props) => {
 
   const initialValues = {
     name: props.flightPlan !== null ? props.flightPlan.name : '',
-    date: props.flightPlan !== null ? props.flightPlan.date : new Date(),
+    date: props.flightPlan !== null ? new Date(props.flightPlan.date) : new Date(),
     description: props.flightPlan !== null ? props.flightPlan.description : '',
     nodes: nodes
   };
@@ -71,7 +71,7 @@ export const CustomFlightPlanForm = (props: Props) => {
         props.navigation.dispatch(popAction);
       }}
     >
-      {({ handleChange, handleBlur, handleSubmit, setFieldValue, values }) => (
+      {({ handleChange, handleBlur, handleSubmit, setFieldValue, errors, touched, values }) => (
         <View style={formStyles.formContainer}>
           <TextInput
             onChangeText={handleChange('name')}
@@ -81,6 +81,8 @@ export const CustomFlightPlanForm = (props: Props) => {
             placeholder='Flight plan name'
             maxLength={100}
           />
+          {touched.name && errors.name ? <Text style={formStyles.validationError}>{errors.name}</Text> : null}
+
           <TextInput
             onChangeText={handleChange('description')}
             onBlur={handleBlur('description')}
@@ -91,6 +93,8 @@ export const CustomFlightPlanForm = (props: Props) => {
             multiline={true}
             numberOfLines={4}
           />
+          {touched.description && errors.description ? <Text style={formStyles.validationError}>{errors.description}</Text> : null}
+
           <Text style={formStyles.formDateText} onPress={() => setDatePickerVisibility(true)}>{values.date.toString()}</Text>
           <DateTimePickerModal
             mode='datetime'
@@ -127,6 +131,7 @@ export const CustomFlightPlanForm = (props: Props) => {
               setNodeModalVisiblity(false)
             }}
           />
+          {touched.date && errors.date ? <Text style={formStyles.validationError}>{errors.date}</Text> : null}
 
           <FlatList
             data={values.nodes}

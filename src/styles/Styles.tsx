@@ -169,6 +169,10 @@ export const formStyles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 5,
     marginRight: 5
+  },
+  validationError: {
+    marginBottom: 10,
+    color: 'red'
   }
 });
 

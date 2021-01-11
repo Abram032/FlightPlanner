@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextInput, View, Text, TouchableOpacity } from 'react-native';
 import { Formik } from 'formik';
-import FlightPlanValidationSchema from './CustomFlightPlanFormValidation';
+import FlightPlanValidationSchema, { NodeValidationSchema } from './CustomFlightPlanFormValidation';
 import { formStyles } from '../../../styles/Styles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Switch } from 'react-native-gesture-handler';
@@ -44,10 +44,30 @@ export const NodeForm = (props: Props) => {
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={FlightPlanValidationSchema}
-      onSubmit={values => console.log(values)}
+      validationSchema={NodeValidationSchema}
+      onSubmit={values => {
+        props.onConfirm(props.selectedNode, {
+          id: uuidv4(),
+          type: values.type,
+          name: values.name,
+          ident: values.ident,
+          description: values.description,
+          coordinateType: values.coordinateType,
+          coordinates: values.coordinateType === CoordinateType.MGRS ? [values.mgrs] : [values.latitude, values.longitude],
+          altitude: parseInt(values.altitude),
+          tot: isTotEnabled ? values.tot : null,
+          dtot: isDtotEnabled ? {
+            start: values.startDTOT,
+            end: values.endDTOT
+          } : null,
+          via: isViaEnabled ? {
+            type: values.viaType,
+            ident: values.viaIdent
+          } : null
+        });
+      }}
     >
-      {({ handleChange, handleBlur, handleSubmit, setFieldValue, values }) => (
+      {({ handleChange, handleBlur, handleSubmit, setFieldValue, touched, errors, values }) => (
         <View style={formStyles.formContainer}>
           <TextInput
             onChangeText={handleChange('name')}
@@ -57,6 +77,7 @@ export const NodeForm = (props: Props) => {
             placeholder='Steerpoint name'
             maxLength={100}
           />
+          {touched.name && errors.name ? <Text style={formStyles.validationError}>{errors.name}</Text> : null}
 
           <TextInput
             onChangeText={handleChange('ident')}
@@ -66,6 +87,7 @@ export const NodeForm = (props: Props) => {
             placeholder='Steerpoint ID (ex. ICAO)'
             maxLength={10}
           />
+          {touched.ident && errors.ident ? <Text style={formStyles.validationError}>{errors.ident}</Text> : null}
 
           <TextInput
             onChangeText={handleChange('type')}
@@ -75,6 +97,7 @@ export const NodeForm = (props: Props) => {
             placeholder='Steerpoint type'
             maxLength={10}
           />
+          {touched.type && errors.type ? <Text style={formStyles.validationError}>{errors.type}</Text> : null}
 
           <TextInput
             onChangeText={handleChange('altitude')}
@@ -85,6 +108,7 @@ export const NodeForm = (props: Props) => {
             maxLength={5}
             keyboardType='phone-pad'
           />
+          {touched.altitude && errors.altitude ? <Text style={formStyles.validationError}>{errors.altitude}</Text> : null}
 
           <View style={formStyles.formHorizontalSelection}>
             <TouchableOpacity activeOpacity={0.8} style={formStyles.formHorizontalSelectionButton} onPress={() => setFieldValue('coordinateType', CoordinateType.GPS)}>
@@ -99,14 +123,17 @@ export const NodeForm = (props: Props) => {
           </View>
           {
             values.coordinateType === CoordinateType.MGRS ?
-              <TextInput
-                onChangeText={handleChange('mgrs')}
-                onBlur={handleBlur('mgrs')}
-                value={values.mgrs}
-                style={formStyles.inputText}
-                placeholder='MGRS coordinate (ex. 34U DC 97758 79483)'
-                maxLength={18}
-              /> :
+              (<>
+                <TextInput
+                  onChangeText={handleChange('mgrs')}
+                  onBlur={handleBlur('mgrs')}
+                  value={values.mgrs}
+                  style={formStyles.inputText}
+                  placeholder='MGRS coordinate (ex. 34U DC 97758 79483)'
+                  maxLength={18}
+                />
+                {touched.mgrs && errors.mgrs ? <Text style={formStyles.validationError}>{errors.mgrs}</Text> : null}
+              </>) :
               (<>
                 <TextInput
                   onChangeText={handleChange('latitude')}
@@ -117,6 +144,7 @@ export const NodeForm = (props: Props) => {
                   keyboardType={values.coordinateType === CoordinateType.GPS ? 'phone-pad' : 'default'}
                   maxLength={14}
                 />
+                {touched.latitude && errors.latitude ? <Text style={formStyles.validationError}>{errors.latitude}</Text> : null}
                 <TextInput
                   onChangeText={handleChange('longitude')}
                   onBlur={handleBlur('longitude')}
@@ -126,6 +154,7 @@ export const NodeForm = (props: Props) => {
                   keyboardType={values.coordinateType === CoordinateType.GPS ? 'phone-pad' : 'default'}
                   maxLength={14}
                 />
+                {touched.longitude && errors.longitude ? <Text style={formStyles.validationError}>{errors.longitude}</Text> : null}
               </>)
           }
 
@@ -139,6 +168,7 @@ export const NodeForm = (props: Props) => {
             multiline={true}
             numberOfLines={4}
           />
+          {touched.description && errors.description ? <Text style={formStyles.validationError}>{errors.description}</Text> : null}
 
           <View style={formStyles.formSwitchContainer}>
             <Text style={formStyles.formText}>Add TOT</Text>
@@ -152,15 +182,16 @@ export const NodeForm = (props: Props) => {
           </View>
           {isTotEnabled ? <Text style={formStyles.formDateText} onPress={() => setTotDatePickerVisibility(true)}>{values.tot.toString()}</Text> : <></>}
           <DateTimePickerModal
-            mode='datetime'
+            mode='time'
             date={new Date(values.tot)}
             isVisible={isTotDatePickerVisible}
             onConfirm={(tot) => {
-              setFieldValue('tot', tot);
+              setFieldValue('tot', tot.toTimeString());
               setTotDatePickerVisibility(false);
             }}
             onCancel={() => setTotDatePickerVisibility(false)}
           />
+          {touched.tot && errors.tot ? <Text style={formStyles.validationError}>{errors.tot}</Text> : null}
 
           <View style={formStyles.formSwitchContainer}>
             <Text style={formStyles.formText}>Add DTOT</Text>
@@ -179,21 +210,23 @@ export const NodeForm = (props: Props) => {
             date={new Date(values.startDTOT)}
             isVisible={isStartDtotDatePickerVisible}
             onConfirm={(startDTOT) => {
-              setFieldValue('startDTOT', startDTOT);
+              setFieldValue('startDTOT', startDTOT.toTimeString());
               setStartDtotDatePickerVisibility(false);
             }}
             onCancel={() => setStartDtotDatePickerVisibility(false)}
           />
+          {touched.startDTOT && errors.startDTOT ? <Text style={formStyles.validationError}>{errors.startDTOT}</Text> : null}
           <DateTimePickerModal
             mode='time'
             date={new Date(values.endDTOT)}
             isVisible={isEndDtotDatePickerVisible}
             onConfirm={(endDTOT) => {
-              setFieldValue('endDTOT', endDTOT);
+              setFieldValue('endDTOT', endDTOT.toTimeString());
               setEndDtotDatePickerVisibility(false);
             }}
             onCancel={() => setEndDtotDatePickerVisibility(false)}
           />
+          {touched.endDTOT && errors.endDTOT ? <Text style={formStyles.validationError}>{errors.endDTOT}</Text> : null}
 
           <View style={formStyles.formSwitchContainer}>
             <Text style={formStyles.formText}>Add Via</Text>
@@ -207,48 +240,38 @@ export const NodeForm = (props: Props) => {
           </View>
           {
             isViaEnabled ?
-              <TextInput
-                onChangeText={handleChange('viaType')}
-                onBlur={handleBlur('viaType')}
-                value={values.viaType}
-                style={formStyles.inputText}
-                placeholder='Via type'
-                maxLength={10}
-              /> : <></>
+              (
+                <>
+                  <TextInput
+                    onChangeText={handleChange('viaType')}
+                    onBlur={handleBlur('viaType')}
+                    value={values.viaType}
+                    style={formStyles.inputText}
+                    placeholder='Via type'
+                    maxLength={10}
+                  />
+                  {touched.viaType && errors.viaType ? <Text style={formStyles.validationError}>{errors.viaType}</Text> : null}
+                </>
+              ): <></>
           }
           {
             isViaEnabled ?
-              <TextInput
-                onChangeText={handleChange('viaIdent')}
-                onBlur={handleBlur('viaIdent')}
-                value={values.viaIdent}
-                style={formStyles.inputText}
-                placeholder='Via ID'
-                maxLength={10}
-              /> : <></>
+            (
+              <>
+                <TextInput
+                  onChangeText={handleChange('viaIdent')}
+                  onBlur={handleBlur('viaIdent')}
+                  value={values.viaIdent}
+                  style={formStyles.inputText}
+                  placeholder='Via ID'
+                  maxLength={10}
+                />
+                {touched.viaIdent && errors.viaIdent ? <Text style={formStyles.validationError}>{errors.viaIdent}</Text> : null}
+              </>
+            ): <></>
           }
 
-          <TouchableOpacity activeOpacity={0.8} style={formStyles.formButton} onPress={() => {
-            props.onConfirm(props.selectedNode, {
-              id: uuidv4(),
-              type: values.type,
-              name: values.name,
-              ident: values.ident,
-              description: values.description,
-              coordinateType: values.coordinateType,
-              coordinates: values.coordinateType === CoordinateType.MGRS ? [values.mgrs] : [values.latitude, values.longitude],
-              altitude: parseInt(values.altitude),
-              tot: isTotEnabled ? values.tot : null,
-              dtot: isDtotEnabled ? {
-                start: values.startDTOT,
-                end: values.endDTOT
-              } : null,
-              via: isViaEnabled ? {
-                type: values.viaType,
-                ident: values.viaIdent
-              } : null
-            });
-          }}>
+          <TouchableOpacity activeOpacity={0.8} style={formStyles.formButton} onPress={handleSubmit}>
             <Text style={formStyles.formButtonText}>{props.selectedNode !== null ? 'Update' : 'Add'}</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8} style={formStyles.formButton} onPress={props.onCancel}>

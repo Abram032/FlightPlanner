@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, TextInput, View, Text, TouchableOpacity } from 'react-native';
-import { Form, Field, ErrorMessage, Formik } from 'formik';
+import { Form, Field, ErrorMessage, Formik, FieldArray } from 'formik';
 import FlightPlanValidationSchema from './CustomFlightPlanFormValidation';
 import { styles, formStyles } from '../../../styles/Styles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -19,25 +19,36 @@ export const CustomFlightPlanForm = (props: Props) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isNodeModalVisible, setNodeModalVisiblity] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [nodes, setNodes] = useState<Node[]>(props.flightPlan?.nodes ?? []);
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  const nodes: Node[] = !!props.flightPlan ? props.flightPlan.nodes : [];
-  let initialValues = {
+  const initialValues = {
     name: props.flightPlan !== null ? props.flightPlan.name : '',
     date: props.flightPlan !== null ? props.flightPlan.date : new Date(),
     description: props.flightPlan !== null ? props.flightPlan.description : '',
     nodes: nodes
+  };
+
+  if(props.flightPlan !== null && props.flightPlan?.nodes !== null && props.flightPlan?.nodes.length !== 0 && nodes.length === 0 && isInitializing) {
+    setIsInitializing(false);
+    setNodes(props.flightPlan?.nodes ?? []);
   }
 
-  console.log("init" + JSON.stringify(initialValues));
-  
   const renderItemButton = ({ item }: { item: Node }) => {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.touchableOpacity} onPress={() => {
-        setSelectedNode(item);
-        setNodeModalVisiblity(true);
-      }}>
-        <Text>{item.ident} {item.name !== null && item.name !== undefined ? `- ${item.name}` : ''} @ {item.altitude} ft</Text>
-      </TouchableOpacity>
+      <View style={formStyles.formHorizontalSelection}>
+        <TouchableOpacity activeOpacity={0.5} style={{...styles.touchableOpacity, flex: 5}} onPress={() => {
+          setSelectedNode(item);
+          setNodeModalVisiblity(true);
+        }}>
+          <Text>{item.ident} {item.name !== null && item.name !== undefined ? `- ${item.name}` : ''} @ {item.altitude} ft</Text>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5} style={formStyles.formHorizontalSelectionButton} onPress={() => {
+          setNodes(nodes.filter((element) => element.id !== item.id));
+        }}>
+          <Text>Delete</Text>
+        </TouchableOpacity>
+      </View>
     )
   }
 

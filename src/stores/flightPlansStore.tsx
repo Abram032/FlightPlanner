@@ -62,3 +62,18 @@ export const updateFlightPlan = async (flightPlan: FlightPlan): Promise<void | u
     console.error(`Error updating flight plan: ${JSON.stringify(flightPlan)} - Error: ${error}`);
   }
 };
+
+export const deleteFlightPlan = async (flightPlan: FlightPlan): Promise<void | undefined> => {
+  try {
+    let plans = await getFlightPlans();
+    if(plans === undefined) {
+      throw 'No existing flight plans';
+    }
+    plans = plans.filter((element) => element.id !== flightPlan.id);
+    const plansRaw = JSON.stringify(plans);
+    await AsyncStorage.setItem('flightplans', plansRaw);
+
+  } catch(error) {
+    console.error(`Error deleting flight plan: ${JSON.stringify(flightPlan)} - Error: ${error}`);
+  }
+};

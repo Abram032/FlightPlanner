@@ -7,6 +7,7 @@ import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { styles } from '../../styles/Styles';
 import * as flightPlanStore from '../../stores/flightPlansStore';
+import { StackActions } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
 
@@ -51,6 +52,16 @@ export class FlightPlanDetails extends React.Component<Props, State> {
   onEdit() {
     const { navigation } = this.props;
     navigation.navigate("FlightPlanCustomForm", this.state.flightPlan?.id);
+  }
+
+  onDelete = async () => {
+    if(!!this.state.flightPlan)
+    {
+      await flightPlanStore.deleteFlightPlan(this.state.flightPlan);
+      const { navigation } = this.props;
+      const popAction = StackActions.pop(1);
+      navigation.dispatch(popAction);
+    }
   }
 
   onShowDetails(item: Node) {
@@ -140,6 +151,9 @@ export class FlightPlanDetails extends React.Component<Props, State> {
           <Text style={styles.componentButtonText}>Edit this flight plan</Text>
         </TouchableOpacity>
         <Card headerComponent={this.renderHeader()} contentComponent={this.renderContent()} />
+        <TouchableOpacity activeOpacity={0.8} style={styles.componentButton} onPress={async () => await this.onDelete()}>
+          <Text style={styles.componentButtonText}>Delete this flight plan</Text>
+        </TouchableOpacity>
       </View>
     );
   }

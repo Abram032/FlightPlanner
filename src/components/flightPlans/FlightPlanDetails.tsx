@@ -13,7 +13,8 @@ const Stack = createStackNavigator();
 export interface Props {
   route: {
     params: string
-  }
+  },
+  navigation: any
 };
 
 interface State {
@@ -38,13 +39,18 @@ export class FlightPlanDetails extends React.Component<Props, State> {
   }
 
   async componentDidMount() {
+    this.props.navigation.addListener('focus', async () => {
+      const flightPlan = await flightPlanStore.getFlightPlanById(this.props.route.params);
+      this.setState({ flightPlan: flightPlan });
+      this.forceUpdate();
+    });
     const flightPlan = await flightPlanStore.getFlightPlanById(this.props.route.params);
     this.setState({ flightPlan: flightPlan });
-    console.log(flightPlan);
   }
 
   onEdit() {
-    
+    const { navigation } = this.props;
+    navigation.navigate("FlightPlanCustomForm", this.state.flightPlan?.id);
   }
 
   onShowDetails(item: Node) {

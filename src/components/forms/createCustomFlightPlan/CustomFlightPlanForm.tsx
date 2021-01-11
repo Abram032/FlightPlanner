@@ -11,7 +11,7 @@ import * as flightPlanStore from '../../../stores/flightPlansStore';
 import { StackActions } from '@react-navigation/native';
 
 export interface Props {
-  flightPlan: FlightPlan | null | undefined,
+  flightPlan: FlightPlan | null,
   navigation: any
 }
 
@@ -22,11 +22,13 @@ export const CustomFlightPlanForm = (props: Props) => {
 
   const nodes: Node[] = !!props.flightPlan ? props.flightPlan.nodes : [];
   let initialValues = {
-    name: !!props.flightPlan ? props.flightPlan.name : '',
-    date: !!props.flightPlan ? props.flightPlan.date : new Date(),
-    description: !!props.flightPlan ? props.flightPlan.description : '',
+    name: props.flightPlan !== null ? props.flightPlan.name : '',
+    date: props.flightPlan !== null ? props.flightPlan.date : new Date(),
+    description: props.flightPlan !== null ? props.flightPlan.description : '',
     nodes: nodes
   }
+
+  console.log("init" + JSON.stringify(initialValues));
   
   const renderItemButton = ({ item }: { item: Node }) => {
     return (
@@ -43,6 +45,7 @@ export const CustomFlightPlanForm = (props: Props) => {
     <Formik
       initialValues={initialValues}
       validationSchema={FlightPlanValidationSchema}
+      enableReinitialize={true}
       onSubmit={async (values) => {
         if(!!props.flightPlan) {
           props.flightPlan.name = values.name;
@@ -121,7 +124,7 @@ export const CustomFlightPlanForm = (props: Props) => {
           />
 
           <TouchableOpacity activeOpacity={0.8} style={formStyles.formButton} onPress={handleSubmit}>
-            <Text style={formStyles.formButtonText}>Create flight plan</Text>
+            <Text style={formStyles.formButtonText}>{props.flightPlan !== null ? 'Update flight plan' : 'Create flight plan'}</Text>
           </TouchableOpacity>
         </View>
       )}

@@ -7,7 +7,6 @@ import { Node } from '../../../models/FlightPlan';
 
 export const NodeFormContainer = ({ selectedNode, isVisible, onConfirm, onCancel }:
   { selectedNode: Node | null, isVisible: boolean, onConfirm: (selectedNode: Node | null, node: Node) => void, onCancel: () => void }) => {
-  console.log(selectedNode);
   return (
     <Modal
       animationType="slide"

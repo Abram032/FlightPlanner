@@ -2,6 +2,7 @@ import React from 'react';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
 import { FlightPlansNavigation } from './FlightPlansNavigation';
 import { isAuthenticated, signOut } from '../../services/AuthService';
+import { About } from '../About';
 
 export interface Props {
   setLoading(value: boolean): void,
@@ -35,6 +36,11 @@ export class Navigation extends React.Component<Props> {
           name='FlightPlans'
           component={FlightPlansNavigation}
           options={{ title: 'Flight plans' }}
+        />
+        <Drawer.Screen
+          name='About'
+          component={About}
+          options={{ title: 'About' }}
         />
       </Drawer.Navigator>
     )

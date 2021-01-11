@@ -9,12 +9,14 @@ import { CustomFlightPlanForm } from '../forms/createCustomFlightPlan/CustomFlig
 import * as flightPlansStore from '../../stores/flightPlansStore';
 
 export interface Props {
-  flightPlanId: string | null | undefined,
   navigation: any,
+  route: {
+    params: string
+  },
 }
 
 interface State {
-  flightPlan: FlightPlan | null | undefined
+  flightPlan: FlightPlan | null
 }
 
 export class FlightPlanCustomForm extends React.Component<Props, State> {
@@ -27,10 +29,10 @@ export class FlightPlanCustomForm extends React.Component<Props, State> {
   }
 
   async componentDidMount() {
-    if(!!this.props.flightPlanId) {
-      const flightPlan = await flightPlansStore.getFlightPlanById(this.props.flightPlanId);
-      this.setState({ flightPlan: flightPlan });
-    } 
+    if(!!this.props.route.params) {
+      const flightPlan = await flightPlansStore.getFlightPlanById(this.props.route.params);
+      this.setState({ flightPlan: flightPlan ?? null });
+    }
   }
 
   render() {

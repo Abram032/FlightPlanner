@@ -22,9 +22,7 @@ export const NodeForm = (props: Props) => {
   const [isEndDtotDatePickerVisible, setEndDtotDatePickerVisibility] = useState(false);
   const [isTotEnabled, setTotIsEnabled] = useState(props.selectedNode !== null && props.selectedNode.tot !== null);
   const [isDtotEnabled, setDtotIsEnabled] = useState(props.selectedNode !== null && props.selectedNode.dtot !== null);
-  const [isViaEnabled, setViaIsEnabled] = useState(props.selectedNode !== null && props.selectedNode.via !== null);
-
-  console.log(props.selectedNode);
+  const [isViaEnabled, setViaIsEnabled] = useState(props.selectedNode !== null && props.selectedNode.via !== null)
 
   let initialValues = {
     name: props.selectedNode !== null ? props.selectedNode.name ?? '' : '',
@@ -42,7 +40,7 @@ export const NodeForm = (props: Props) => {
     mgrs: props.selectedNode !== null && props.selectedNode.coordinateType === CoordinateType.MGRS ? props.selectedNode.coordinates[0].toString() ?? '' : '',
     coordinateType: props.selectedNode !== null ? props.selectedNode.coordinateType ?? CoordinateType.GPS : CoordinateType.GPS
   };
-  
+
   return (
     <Formik
       initialValues={initialValues}

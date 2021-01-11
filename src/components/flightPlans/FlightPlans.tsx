@@ -31,8 +31,13 @@ export class FlightPlans extends React.Component<any, State> {
   }
 
   async componentDidMount() {
+    this.props.navigation.addListener('focus', async () => {
+      var plans = await flightPlansStore.getFlightPlans();
+      this.setState({ data: plans });
+      this.forceUpdate();
+    });
     var plans = await flightPlansStore.getFlightPlans();
-    this.setState({ data: plans })
+    this.setState({ data: plans });
     this.forceUpdate();
   }
 

@@ -20,10 +20,6 @@ export const CustomFlightPlanForm = (props: Props) => {
   const [isNodeModalVisible, setNodeModalVisiblity] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
-  const handleAddNode = () => {
-    console.log("Adding node, opening modal");
-  };
-
   const nodes: Node[] = !!props.flightPlan ? props.flightPlan.nodes : [];
   let initialValues = {
     name: !!props.flightPlan ? props.flightPlan.name : '',
@@ -35,7 +31,6 @@ export const CustomFlightPlanForm = (props: Props) => {
   const renderItemButton = ({ item }: { item: Node }) => {
     return (
       <TouchableOpacity activeOpacity={0.5} style={styles.touchableOpacity} onPress={() => {
-        console.log(item);
         setSelectedNode(item);
         setNodeModalVisiblity(true);
       }}>

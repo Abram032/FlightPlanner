@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
-import { FlightPlan, Node } from '../../models/FlightPlan';
+import { CoordinateType, FlightPlan, Node } from '../../models/FlightPlan';
 import { Card } from '../shared/Card';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { styles } from '../../styles/Styles';
+import * as flightPlanStore from '../../stores/flightPlansStore';
 
 const Stack = createStackNavigator();
 
@@ -16,70 +17,15 @@ export interface Props {
 };
 
 interface State {
-  flightPlan: FlightPlan
+  flightPlan: FlightPlan | null | undefined
 }
 
 export class FlightPlanDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const flightPlan = new FlightPlan('EPWA -> EPWA', new Date(), 'Sample text');
-    flightPlan.addNode({
-      id: uuidv4(),
-      type: 'APT',
-      ident: 'EPWA',
-      name: 'Warsaw Chopin Airport',
-      altitude: 361,
-      coordinates: {
-        latitude: 52.165833,
-        longitude: 20.967222
-      }
-    });
-    flightPlan.addNode({
-      id: uuidv4(),
-      type: 'FIX',
-      ident: 'OBOLA',
-      altitude: 21400,
-      coordinates: {
-        latitude: 52.1944,
-        longitude: 16.211399999999998
-      },
-      via: {
-        type: 'AWY-HI',
-        ident: 'L980'
-      }
-    });
-    flightPlan.addNode({
-      id: uuidv4(),
-      type: 'TGT',
-      ident: 'SITE-1',
-      altitude: 321,
-      coordinates: {
-        latitude: 51.87251,
-        longitude: 17.65147,
-        mgrs: '4QFJ 12345 67890'
-      },
-      tot: new Date(),
-      dtot: {
-        start: new Date(),
-        end: new Date()
-      },
-      description: 'SA-6 Site'
-    });
-    flightPlan.addNode({
-      id: uuidv4(),
-      type: 'APT',
-      ident: 'EPWA',
-      name: 'Warsaw Chopin Airport',
-      altitude: 361,
-      coordinates: {
-        latitude: 52.165833,
-        longitude: 20.967222
-      }
-    });
-
     this.state = {
-      flightPlan: flightPlan
+      flightPlan: null
     }
 
     this.onEdit = this.onEdit.bind(this);
@@ -91,8 +37,14 @@ export class FlightPlanDetails extends React.Component<Props, State> {
     this.onShowDetails = this.onShowDetails.bind(this);
   }
 
-  onEdit() {
+  async componentDidMount() {
+    const flightPlan = await flightPlanStore.getFlightPlanById(this.props.route.params);
+    this.setState({ flightPlan: flightPlan });
+    console.log(flightPlan);
+  }
 
+  onEdit() {
+    
   }
 
   onShowDetails(item: Node) {
@@ -123,14 +75,19 @@ export class FlightPlanDetails extends React.Component<Props, State> {
         <Text>Name: {item.name ?? 'N/A'}</Text>
         <Text>Type: {item.type}</Text>
         <Text>Altitude: {item.altitude}</Text>
-        <Text>Latitude: {item.coordinates.latitude}</Text>
-        <Text>Longitude: {item.coordinates.longitude}</Text>
-        <Text>MGRS: {item.coordinates.mgrs ?? 'N/A'}</Text>
+        {
+          item.coordinateType === CoordinateType.MGRS ? 
+          <Text>MGRS: {item.coordinates[0]}</Text> : 
+          (<>
+            <Text>Latitude: {item.coordinates[0]}</Text>
+            <Text>Longitude: {item.coordinates[1]}</Text>
+          </>)
+        }
         <Text>Via: {!!item.via ? `${item.via.type} - ${item.via.ident}` : 'N/A'}</Text>
-        <Text>TOT: {!!item.tot ? `${item.tot.getUTCHours()}${item.tot.getUTCMinutes()}Z` : 'N/A'}</Text>
+        <Text>TOT: {!!item.tot ? `${(new Date(item.tot)).getUTCHours()}${(new Date(item.tot)).getUTCMinutes()}Z` : 'N/A'}</Text>
         <Text>DTOT: 
           {!!item.dtot ? 
-            ` ${item.dtot.start.getUTCHours()}${item.dtot.start.getUTCMinutes()}Z - ${item.dtot.end.getUTCHours()}${item.dtot.end.getUTCMinutes()}Z` : 'N/A'}
+            ` ${(new Date(item.dtot.start)).getUTCHours()}${(new Date(item.dtot.start)).getUTCMinutes()}Z - ${(new Date(item.dtot.end)).getUTCHours()}${(new Date(item.dtot.end)).getUTCMinutes()}Z` : 'N/A'}
         </Text>
         <Text>Description: {item.description ?? 'N/A'}</Text>
       </View>
@@ -158,12 +115,11 @@ export class FlightPlanDetails extends React.Component<Props, State> {
   renderContent() {
     return (
       <View style={styles.componentDetailContainer}>
-        <Text style={styles.componentText}>Id: {this.state.flightPlan.id}</Text>
-        <Text style={styles.componentText}>Name: {this.state.flightPlan.name}</Text>
-        <Text style={styles.componentText}>Date: {this.state.flightPlan.date.toLocaleString()}</Text>
-        <Text style={styles.componentText}>Description: {this.state.flightPlan.description}</Text>
+        <Text style={styles.componentText}>Name: {!!this.state.flightPlan ? this.state.flightPlan.name : ''}</Text>
+        <Text style={styles.componentText}>Date: {!!this.state.flightPlan ? this.state.flightPlan.date.toLocaleString() : ''}</Text>
+        <Text style={styles.componentText}>Description: {!!this.state.flightPlan ? this.state.flightPlan.description : ''}</Text>
         <FlatList 
-          data={this.state.flightPlan.nodes}
+          data={!!this.state.flightPlan ? this.state.flightPlan.nodes : []}
           renderItem={this.renderItem}
           keyExtractor={item => item.id}
         />

@@ -5,14 +5,11 @@ import { Card } from '../shared/Card';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../styles/Styles';
-
-let data: FlightPlan[] = [
-  new FlightPlan('EPWA -> EDDB', new Date()),
-  new FlightPlan('EDDB -> EPWA', new Date()),
-];
+import * as flightPlansStore from '../../stores/flightPlansStore';
 
 interface State {
-  isLoading: boolean
+  isLoading: boolean,
+  data: FlightPlan[] | null | undefined
 }
 
 const Stack = createStackNavigator();
@@ -22,7 +19,8 @@ export class FlightPlans extends React.Component<any, State> {
     super(props);
 
     this.state = {
-      isLoading: true
+      isLoading: true,
+      data: null
     }
 
     this.renderHeader = this.renderHeader.bind(this);
@@ -32,6 +30,12 @@ export class FlightPlans extends React.Component<any, State> {
     this.onCreate = this.onCreate.bind(this);
   }
 
+  async componentDidMount() {
+    var plans = await flightPlansStore.getFlightPlans();
+    this.setState({ data: plans })
+    this.forceUpdate();
+  }
+
   renderItem({ item }: { item: FlightPlan }) {
     return (
       <TouchableOpacity activeOpacity={0.5} style={styles.touchableOpacity} onPress={() => { this.onShowDetails(item) }}>
@@ -39,7 +43,7 @@ export class FlightPlans extends React.Component<any, State> {
       </TouchableOpacity>
     )
   }
-  
+
   renderHeader() {
     return (
       <View>
@@ -51,8 +55,8 @@ export class FlightPlans extends React.Component<any, State> {
   renderContent() {
     return (
       <View style={styles.flatListContainer}>
-        <FlatList 
-          data={data}
+        <FlatList
+          data={this.state.data}
           renderItem={this.renderItem}
           keyExtractor={item => item.id}
         />

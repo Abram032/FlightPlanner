@@ -9,13 +9,13 @@ export class FlightPlan {
   nodes: Node[];
   description?: string;
 
-  constructor(name: string, date: Date, description?: string) {
+  constructor(name: string, date: Date, description?: string, nodes?: Node[]) {
     this.id = uuidv4(),
     this.name = name,
     this.description = description,
     this.createdAt = new Date(),
     this.date = date,
-    this.nodes = []
+    this.nodes = nodes ?? []
   }
 
   addNode(node: Node): void {
@@ -35,7 +35,8 @@ export interface Node {
   id: string;
   type: string;
   ident: string;
-  coordinates: Coordinates;
+  coordinates: string[] | number[];
+  coordinateType: CoordinateType;
   altitude: number;
   name?: string | null;
   tot?: Date | null;
@@ -45,10 +46,10 @@ export interface Node {
   inDetailMode?: boolean;
 }
 
-export interface Coordinates {
-  latitude: number,
-  longitude: number,
-  mgrs?: string | null
+export enum CoordinateType {
+  GPS,
+  LATLON,
+  MGRS
 }
 
 export interface DTOT {
@@ -60,4 +61,3 @@ export interface Via {
   type: string | null,
   ident: string | null
 }
-

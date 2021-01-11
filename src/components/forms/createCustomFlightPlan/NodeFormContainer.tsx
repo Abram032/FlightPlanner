@@ -1,25 +1,23 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import { formStyles } from '../../../styles/Styles';
+import { ScrollView } from 'react-native-gesture-handler';
+import { styles, formStyles } from '../../../styles/Styles';
+import { NodeForm } from './NodeForm';
+import { Node } from '../../../models/FlightPlan';
 
-export const NodeFormContainer = ({ node, isVisible, onConfirm, onCancel }: 
-  { node: any, isVisible: boolean, onConfirm: (node: any) => void, onCancel: () => void }) => {
+export const NodeFormContainer = ({ selectedNode, isVisible, onConfirm, onCancel }:
+  { selectedNode: Node | null, isVisible: boolean, onConfirm: (selectedNode: Node | null, node: Node) => void, onCancel: () => void }) => {
+  console.log(selectedNode);
   return (
     <Modal
       animationType="slide"
       visible={isVisible}
       onRequestClose={onCancel}
     >
-      <View>
-        <Text>Test modal</Text>
-        <TouchableOpacity
-          style={{ backgroundColor: '#f00' }}
-          onPress={() => {
-            onConfirm(false);
-          }}
-        >
-          <Text>Hide modal</Text>
-        </TouchableOpacity>
+      <View style={styles.componentBody}>
+        <ScrollView style={{flex: 1, width: '100%'}}>
+          <NodeForm selectedNode={selectedNode} isVisible={isVisible} onConfirm={onConfirm} onCancel={onCancel} />
+        </ScrollView>
       </View>
     </Modal>
   );

@@ -6,7 +6,7 @@ export const getFlightPlans = async (): Promise<FlightPlan[] | undefined> => {
     const plansRaw = await AsyncStorage.getItem('flightplans');
     if(plansRaw !== null) {
       const plans: FlightPlan[] = JSON.parse(plansRaw);
-      return plans.sort((a, b) => b.date.getTime() - a.date.getTime());
+      return !!plans ? plans.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) : [];
     } else {
       return [];
     }

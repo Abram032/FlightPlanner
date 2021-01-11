@@ -125,6 +125,9 @@ export const formStyles = StyleSheet.create({
     marginBottom: 10,
     padding: 5
   },
+  formText: {
+    color: '#fff'
+  },
   formContainer: {
     flex: 1,
     width: '100%'
@@ -148,6 +151,24 @@ export const formStyles = StyleSheet.create({
     marginBottom: 10,
     textAlignVertical: 'center',
     padding: 5
+  },
+  formSwitchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  formHorizontalSelection: {
+    flexDirection: 'row'
+  },
+  formHorizontalSelectionButton: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginLeft: 5,
+    marginRight: 5
   }
 });
 
